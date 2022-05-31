@@ -1,5 +1,5 @@
 {
-  description = "api-ts";
+  description = "@api-ts/io-ts-http";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
@@ -20,12 +20,6 @@
           };
           workspace = pkgs.yarn2nix-moretea.mkYarnWorkspace {
             src = ./.;
-            extraBuildInputs = [ pkgs.jq ];
-            buildPhase = ''
-              strippedConfig="$(jq '.references = []' tsconfig.json)" && echo -E "$\{strippedConfig\}" > tsconfig.json
-              yarn run build
-            '';
-            dontStrip = true; # Weird performance hack
           };
         in {
           devShells = {
@@ -35,20 +29,20 @@
               packages = with pkgs; [
                 nodejs
                 yarn
-                jq
               ];
-            };
-          } // pkgs.lib.mapAttrs (name: package: pkgs.mkShell {
-            packages = [
-              pkgs.nodejs
-            ];
 
-            shellHook = ''
-              echo ${package}
-              export NODE_PATH=${package.deps}/node_modules:$NODE_PATH
-              export PATH=${package.deps}/node_modules/.bin:$PATH
-            '';
-          }) workspace;
+              #shellHook = ''
+                #export PATH="$(pwd)/node_modules/.bin:$PATH"
+              #'';
+            };
+          }; #// pkgs.lib.mapAttrs (name: package: pkgs.mkShell {
+            #packages = [ pkgs.nodejs ];
+
+            #shellHook = ''
+              #export NODE_PATH=${package.deps}/node_modules:$NODE_PATH
+              #export PATH=${package.deps}/node_modules/.bin:$PATH
+            #'';
+          #}) workspace;
         }
       );
 }
