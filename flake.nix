@@ -20,9 +20,9 @@
           };
           workspace = pkgs.yarn2nix-moretea.mkYarnWorkspace {
             src = ./.;
-            extraBuildInputs = [ pkgs.jq ];
+            #extraBuildInputs = [ pkgs.jq ];
             buildPhase = ''
-              strippedConfig="$(jq '.references = []' tsconfig.json)" && echo -E "$\{strippedConfig\}" > tsconfig.json
+              #strippedConfig="$(jq '.references = []' tsconfig.json)" && echo -E "$\{strippedConfig\}" > tsconfig.json
               yarn run build
             '';
             dontStrip = true; # Weird performance hack
@@ -35,7 +35,6 @@
               packages = with pkgs; [
                 nodejs
                 yarn
-                jq
               ];
             };
           } // pkgs.lib.mapAttrs (name: package: pkgs.mkShell {
@@ -45,8 +44,8 @@
 
             shellHook = ''
               echo ${package}
-              export NODE_PATH=${package.deps}/node_modules:$NODE_PATH
-              export PATH=${package.deps}/node_modules/.bin:$PATH
+              export NODE_PATH=${package}/libexec/${package.pname}/node_modules:$NODE_PATH
+              export PATH=${package}/libexec/${package.pname}/node_modules/.bin:$PATH
             '';
           }) workspace;
         }

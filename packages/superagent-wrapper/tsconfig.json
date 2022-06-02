@@ -23,8 +23,5 @@
     "target": "es2019"
   },
   "references": [
-    {
-      "path": "../io-ts-http"
-    }
   ]
 }

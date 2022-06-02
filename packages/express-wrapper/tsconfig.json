@@ -26,11 +26,5 @@
     }
   },
   "references": [
-    {
-      "path": "../io-ts-http"
-    },
-    {
-      "path": "../superagent-wrapper"
-    }
   ]
 }

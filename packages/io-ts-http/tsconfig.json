@@ -11,8 +11,5 @@
     "skipLibCheck": true
   },
   "references": [
-    {
-      "path": "../response"
-    }
   ]
 }
