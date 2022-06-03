@@ -11,12 +11,13 @@ let
     '';
     dontStrip = true; # Weird performance hack
   };
-  package = workspace.${nodePackage}
+  package = workspace.${nodePackage};
 in {
   devShells = {
     default = pkgs.mkShell {
       packages = [
         pkgs.nodejs
+        pkgs.yarn
       ];
 
       shellHook = ''

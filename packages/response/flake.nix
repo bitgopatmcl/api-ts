@@ -18,7 +18,7 @@
           workspace = import ../../workspace.nix;
         in workspace {
           inherit pkgs;
-          nodePackage = "api-ts-io-ts-http";
+          nodePackage = "api-ts-response";
         }
       );
 }
