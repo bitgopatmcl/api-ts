@@ -1,6 +1,4 @@
 {
-  description = "@api-ts/io-ts-http";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
