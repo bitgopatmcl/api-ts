@@ -1,5 +1,5 @@
 {
-  description = "@api-ts/io-ts-http";
+  description = "@api-ts/response";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
@@ -18,7 +18,7 @@
           workspace = import ../../workspace.nix;
         in workspace {
           inherit pkgs;
-          nodePackage = "api-ts-response";
+          packageJSON = ./package.json;
         }
       );
 }
