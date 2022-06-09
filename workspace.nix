@@ -26,7 +26,7 @@ let
       export NODE_PATH=${workspaceNodePaths}:${packageOut.deps}/node_modules:$NODE_PATH
       export PATH=${packageOut.deps}/node_modules/.bin:$PATH
     '';
-  scriptPackages = builtins.mapAttrs (name: script: pkgs.writeShellScriptBin "yarn-script-${name}" ''
+  scripts = builtins.mapAttrs (name: script: pkgs.writeShellScriptBin "yarn-script-${name}" ''
       ${loadNodeEnv}
       ${pkgs.yarn}/bin/yarn run ${name} $*
     '') package.scripts;
@@ -42,10 +42,12 @@ in {
     };
   };
 
-  packages = scriptPackages;
+  checks = {
+    default = scripts.test;
+  };
 
   apps = builtins.mapAttrs (name: script: {
     type = "app";
-    program = "${scriptPackages.${name}}/bin/yarn-script-${name}";
-  }) package.scripts;
+    program = "${script}/bin/yarn-script-${name}";
+  }) scripts;
 }
