@@ -20,9 +20,14 @@ let
     dontStrip = true; # Weird performance hack
   };
   packageOut = workspace.${nodePackage};
+  loadNodeEnv = let
+      workspaceNodePaths = pkgs.lib.concatMapStringsSep ":" (dep: "${dep}/libexec") packageOut.workspaceDependencies;
+    in ''
+      export NODE_PATH=${workspaceNodePaths}:${packageOut.deps}/node_modules:$NODE_PATH
+      export PATH=${packageOut.deps}/node_modules/.bin:$PATH
+    '';
   scriptPackages = builtins.mapAttrs (name: script: pkgs.writeShellScriptBin "yarn-script-${name}" ''
-      NODE_PATH=${packageOut}/libexec/${packageOut.pname}/node_modules:$NODE_PATH
-      PATH=${packageOut}/libexec/${packageOut.pname}/node_modules/.bin:$PATH
+      ${loadNodeEnv}
       ${pkgs.yarn}/bin/yarn run ${name} $*
     '') package.scripts;
 in {
@@ -30,12 +35,10 @@ in {
     default = pkgs.mkShell {
       packages = [
         pkgs.nodejs
+        pkgs.yarn
       ];
 
-      shellHook = ''
-        export NODE_PATH=${packageOut}/libexec/${packageOut.pname}/node_modules:$NODE_PATH
-        export PATH=${packageOut}/libexec/${packageOut.pname}/node_modules/.bin:$PATH
-      '';
+      shellHook = loadNodeEnv;
     };
   };
 
