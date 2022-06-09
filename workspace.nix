@@ -42,9 +42,9 @@ in {
     };
   };
 
-  checks = {
-    default = scripts.test;
-  };
+  #checks = {
+    #default = scripts.test;
+  #};
 
   apps = builtins.mapAttrs (name: script: {
     type = "app";
