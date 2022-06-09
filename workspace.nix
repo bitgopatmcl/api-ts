@@ -19,12 +19,15 @@ let
     '';
     dontStrip = true; # Weird performance hack
   };
-  packageOut = workspace.${nodePackage};
+  packageModules = workspace.${nodePackage}.overrideAttrs (attrs: {
+    buildPhase = "";
+    doDist = false;
+  });
   loadNodeEnv = let
-      workspaceNodePaths = pkgs.lib.concatMapStringsSep ":" (dep: "${dep}/libexec") packageOut.workspaceDependencies;
+      workspaceNodePaths = pkgs.lib.concatMapStringsSep ":" (dep: "${workspace.${reformatPackageName dep.pname}}/libexec") packageModules.workspaceDependencies;
     in ''
-      export NODE_PATH=${workspaceNodePaths}:${packageOut.deps}/node_modules:$NODE_PATH
-      export PATH=${packageOut.deps}/node_modules/.bin:$PATH
+      export NODE_PATH=${packageModules}/libexec/${packageModules.pname}/node_modules:$NODE_PATH
+      export PATH=${packageModules}/libexec/${packageModules.pname}/node_modules/.bin:$PATH
     '';
   scripts = builtins.mapAttrs (name: script: pkgs.writeShellScriptBin "yarn-script-${name}" ''
       ${loadNodeEnv}
