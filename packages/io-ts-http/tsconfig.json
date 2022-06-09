@@ -8,7 +8,11 @@
     "outDir": "./dist",
     "composite": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "/nix/store/chpx4248llp57h5182a6zvm3cdmcmapj-api-ts-io-ts-http-0.0.0-semantically-released/libexec/@api-ts/io-ts-http/node_modules",
+    "typeRoots": [
+      "/nix/store/chpx4248llp57h5182a6zvm3cdmcmapj-api-ts-io-ts-http-0.0.0-semantically-released/libexec/@api-ts/io-ts-http/node_modules/@types"
+    ]
   },
   "references": [
   ]
