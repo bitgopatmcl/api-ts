@@ -1,8 +1,5 @@
 { pkgs, packageJSON }:
 let
-  nodejs = pkgs.callPackage "${pkgs.path}/pkgs/development/web/nodejs/v16.nix" {
-    enableNpm = false;
-  };
   package = pkgs.lib.importJSON packageJSON;
   # Duplicated from yarn2nix-moretea's version
   reformatPackageName = pname:
