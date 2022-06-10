@@ -29,10 +29,19 @@ let
       export NODE_PATH=${packageModules}/libexec/${packageModules.pname}/node_modules:$NODE_PATH
       export PATH=${packageModules}/libexec/${packageModules.pname}/node_modules/.bin:$PATH
     '';
-  scripts = builtins.mapAttrs (name: script: pkgs.writeShellScriptBin "yarn-script-${name}" ''
-      ${loadNodeEnv}
-      ${pkgs.yarn}/bin/yarn run ${name} $*
-    '') package.scripts;
+  scriptNames = pkgs.lib.mapAttrsToList (name: value: name) package.scripts;
+  writeScripts = pkgs.lib.concatMapStringsSep "\n" (name: ''
+    cat > $out/bin/yarn-script-${name} <<EOF
+    #!${pkgs.bash}/bin/bash
+    ${loadNodeEnv}
+    ${pkgs.yarn}/bin/yarn run ${name} $*
+    EOF
+    chmod +x $out/bin/yarn-script-${name}
+  '') scriptNames;
+  scripts = pkgs.runCommand "${nodePackage}-scripts" {} ''
+    mkdir -p $out/bin
+    ${writeScripts}
+  '';
 in {
   devShells = {
     default = pkgs.mkShell {
@@ -51,6 +60,6 @@ in {
 
   apps = builtins.mapAttrs (name: script: {
     type = "app";
-    program = "${script}/bin/yarn-script-${name}";
-  }) scripts;
+    program = "${scripts}/bin/yarn-script-${name}";
+  }) package.scripts;
 }
