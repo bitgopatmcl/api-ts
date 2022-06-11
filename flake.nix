@@ -39,15 +39,8 @@
           {
             "compilerOptions": {
               "paths": {
-                "*": ["${package.deps}/node_modules"]
-              },
-              "typeRoots": [
-                "${package.deps}/node_modules/@types"
-              ]
-            },
-            "references": [
-              ${builtins.concatStringsSep ",\n    " references}
-            ]
+              }
+            }
           }
         '') workspace;
         writeTsconfigJsons = pkgs.lib.mapAttrsToList (name: tsconfig: ''
@@ -55,9 +48,12 @@
           ${tsconfig}
           EOF
         '') tsconfigJsons;
+        linkNodeModules = pkgs.lib.mapAttrsToList (name: package: ''
+          ln -s ${package.deps}/node_modules $out/${name}-modules
+        '') workspace;
         tsconfigs = pkgs.runCommand "api-ts-tsconfigs" {} ''
           mkdir -p $out
-          ${builtins.concatStringsSep "\n" writeTsconfigJsons}
+          ${builtins.concatStringsSep "\n" linkNodeModules}
         '';
       in {
         devShells = {

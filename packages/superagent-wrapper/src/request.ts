@@ -73,8 +73,10 @@ export const superagentRequestFactory =
     return superagent[method](url.toString());
   };
 
+type SupertestReqType<T> = T extends SuperTest<infer Req> ? Req : never;
+
 export const supertestRequestFactory =
-  <Req extends SuperAgentRequest>(supertest: SuperTest<Req>): RequestFactory<Req> =>
+  <T extends SuperTest<any>>(supertest: T): RequestFactory<SupertestReqType<T>> =>
   <Route extends h.HttpRoute>(route: Route, params: Record<string, string>) => {
     const method = METHOD_MAP[route.method];
     const path = substitutePathParams(route.path, params);
@@ -133,7 +135,7 @@ const patchRequest = <Req extends SuperAgentRequest, Route extends h.HttpRoute>(
   ) =>
     patchedReq.decode().then((res) => {
       if (res.status !== status) {
-        const error = res.error ?? `Unexpected status code ${res.status}`;
+        const error = res.error ?? `Unexpected status code ${String(res.status)}`;
         throw new Error(JSON.stringify(error));
       } else {
         return res as ExpectedDecodedResponse<Route, StatusCode>;

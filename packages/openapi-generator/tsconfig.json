@@ -1,5 +1,5 @@
 {
-  "extends": "../../.tsconfigs/api-ts-openapi-generator-tsconfig.json",
+  "include": ["src/**/*.ts", "test/**/*.json", "test/**/*.ts"],
   "compilerOptions": {
     "allowUnreachableCode": false,
     "composite": true,
@@ -18,7 +18,12 @@
     "skipLibCheck": false,
     "sourceMap": true,
     "strict": true,
-    "target": "es2019"
+    "target": "es2019",
+    "paths": {
+      "@api-ts/io-ts-http": ["../io-ts-http"]
+    }
   },
-  "include": ["src/**/*.ts", "test/**/*.json", "test/**/*.ts"]
+  "references": [
+    { "path": "../io-ts-http" }
+  ]
 }

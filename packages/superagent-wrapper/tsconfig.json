@@ -20,8 +20,12 @@
     "skipLibCheck": false,
     "sourceMap": true,
     "strict": true,
-    "target": "es2019"
+    "target": "es2019",
+    "paths": {
+      "@api-ts/io-ts-http": ["../io-ts-http"]
+    }
   },
   "references": [
+    { "path": "../io-ts-http" }
   ]
 }

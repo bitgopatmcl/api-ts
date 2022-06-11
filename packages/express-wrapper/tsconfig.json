@@ -1,5 +1,4 @@
 {
-  "extends": "../../.tsconfigs/api-ts-express-wrapper-tsconfig.json",
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
@@ -10,8 +9,14 @@
     "composite": true,
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": [
-      "/nix/store/wpgh8bkn48x3il1jins0kd290ja4ns84-api-ts-express-wrapper-modules-0.0.0-semantically-released/node_modules/@types"
-    ]
+    "esModuleInterop": true,
+    "paths": {
+      "@api-ts/io-ts-http": ["../io-ts-http"],
+      "@api-ts/superagent-wrapper": ["../superagent-wrapper"]
+    }
   },
+  "references": [
+    {"path": "../io-ts-http"},
+    {"path": "../superagent-wrapper"}
+  ]
 }

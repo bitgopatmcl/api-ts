@@ -1,5 +1,4 @@
 {
-  "extends": "../../.tsconfigs/api-ts-io-ts-http-tsconfig.json",
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
@@ -9,6 +8,12 @@
     "outDir": "./dist",
     "composite": true,
     "strict": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "paths": {
+      "@api-ts/response": ["../response"]
+    }
+  },
+  "references": [
+    { "path": "../response" }
+  ]
 }
