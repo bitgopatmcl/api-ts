@@ -27,8 +27,13 @@
             parts = builtins.tail (builtins.match "^(@([^/]+)/)?([^/]+)$" pname);
             non-null = builtins.filter (x: x != null) parts;
           in builtins.concatStringsSep "-" non-null;
-        tsconfigJsons = pkgs.lib.mapAttrs (name: package: ''
+        tsconfigJsons = pkgs.lib.mapAttrs (name: package: let
+          dirname = dep: pkgs.lib.last (pkgs.lib.splitString "/" dep.pname);
+          paths = builtins.map (dep: ''"${dep.pname}": ["../packages/${dirname dep}/src/index"]'') package.workspaceDependencies;
+          references = builtins.map (dep: ''{ "path": "../packages/${dirname dep}" }'') package.workspaceDependencies;
+        in ''
           {
+            "extends": "../tsconfig.json",
             "compilerOptions": {
               "baseUrl": "${package.deps}/node_modules",
               "typeRoots": [
@@ -49,7 +54,10 @@
       in {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ nodejs ];
+            packages = with pkgs; [
+              nodejs
+              yarn
+            ];
 
             shellHook = ''
               if [[ -d $(pwd)/.tsconfigs || -L $(pwd)/.tsconfigs ]]; then

@@ -3,6 +3,9 @@ import { Json } from 'io-ts-types';
 import { flattened, optional, optionalized } from './combinators';
 import { DerefProp, FieldPowerSet, OutputConstrainedProps } from './utils';
 
+import * as R from '@api-ts/response';
+
+
 export const GenericHttpRequest = optionalized({
   // DISCUSS: renaming this to something more specific, e.g. route, or path, or routeParams, or pathParams
   params: t.record(t.string, t.string),

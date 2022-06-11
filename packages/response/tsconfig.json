@@ -1,4 +1,5 @@
 {
+  "extends": "../../.tsconfigs/api-ts-response-tsconfig.json",
   "compilerOptions": {
     "allowUnreachableCode": false,
     "composite": true,
