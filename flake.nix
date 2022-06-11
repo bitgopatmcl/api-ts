@@ -29,17 +29,25 @@
           in builtins.concatStringsSep "-" non-null;
         tsconfigJsons = pkgs.lib.mapAttrs (name: package: let
           dirname = dep: pkgs.lib.last (pkgs.lib.splitString "/" dep.pname);
-          paths = builtins.map (dep: ''"${dep.pname}": ["../packages/${dirname dep}/src/index"]'') package.workspaceDependencies;
+          paths = builtins.map (dep: ''"${dep.pname}": ["../${dirname dep}/src"]'') package.workspaceDependencies;
           references = builtins.map (dep: ''{ "path": "../packages/${dirname dep}" }'') package.workspaceDependencies;
+          depPaths = pkgs.lib.mapAttrsToList (name: version: let
+            depPackageJson = pkgs.lib.importJSON "${package.deps}/node_modules/${name}";
+            typings = "${package.deps}/node_modules/${name}/package.json";
+          in ''"${name}": ["${typings}"]'') (package.package.dependencies or {});
         in ''
           {
-            "extends": "../tsconfig.json",
             "compilerOptions": {
-              "baseUrl": "${package.deps}/node_modules",
+              "paths": {
+                "*": ["${package.deps}/node_modules"]
+              },
               "typeRoots": [
                 "${package.deps}/node_modules/@types"
               ]
-            }
+            },
+            "references": [
+              ${builtins.concatStringsSep ",\n    " references}
+            ]
           }
         '') workspace;
         writeTsconfigJsons = pkgs.lib.mapAttrsToList (name: tsconfig: ''

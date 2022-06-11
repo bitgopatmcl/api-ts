@@ -9,12 +9,6 @@
     "outDir": "./dist",
     "composite": true,
     "strict": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@api-ts/*": ["/Users/patrickmclaughlin/dev/api-ts/packages/*"]
-    }
-  },
-  "references": [
-    { "path": "../response" }
-  ]
+    "skipLibCheck": true
+  }
 }

@@ -3,6 +3,9 @@ import * as R from 'fp-ts/Record';
 import * as t from 'io-ts';
 import { Flattened, FlattenedC, NestedC, PossiblyUndefinedKeys } from './utils';
 
+import * as f from 'fp-ts';
+import * as r from '@api-ts/response';
+
 export const optional = <C extends t.Mixed>(subCodec: C) =>
   t.union([subCodec, t.undefined]);
 
