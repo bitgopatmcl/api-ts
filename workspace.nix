@@ -55,6 +55,15 @@ in {
     #default = scripts.test;
   #};
 
+  packages = {
+    docker = pkgs.dockerTools.buildLayeredImage {
+      name = nodePackage;
+      tag = "latest";
+      contents = scripts;
+      config.Cmd = "${scripts}/bin/yarn-script-test";
+    };
+  };
+
   apps = builtins.mapAttrs (name: script: {
     type = "app";
     program = "${scripts}/bin/yarn-script-${name}";
