@@ -3,6 +3,7 @@ import * as E from 'fp-ts/Either';
 import * as R from 'fp-ts/Record';
 import * as t from 'io-ts';
 import {
+  DefinedValues,
   Flattened,
   NestedType,
   NestedOutputType,
@@ -13,10 +14,51 @@ import {
   Simplify,
 } from './utils';
 
+const partialWithoutUndefined = <P extends t.Props>(
+  props: P,
+  name?: string,
+): t.PartialType<
+  P,
+  DefinedValues<t.TypeOfPartialProps<P>>,
+  DefinedValues<t.OutputOfPartialProps<P>>
+> => {
+  const partialCodec = t.partial(props, name);
+  return new t.PartialType(
+    partialCodec.name,
+    (i): i is DefinedValues<t.TypeOfPartialProps<P>> => partialCodec.is(i),
+    (i, ctx) => {
+      return pipe(
+        partialCodec.validate(i, ctx),
+        E.map((result) => {
+          for (const key in result) {
+            if (result[key] === undefined) {
+              delete result[key];
+            }
+          }
+          return result as DefinedValues<t.TypeOfPartialProps<P>>;
+        }),
+      );
+    },
+    (a) => {
+      const result = partialCodec.encode(a);
+      for (const key in result) {
+        if (result[key] === undefined) {
+          delete result[key];
+        }
+      }
+      return result as DefinedValues<t.OutputOfPartialProps<P>>;
+    },
+    props,
+  );
+};
+
 export const optional = <C extends t.Mixed>(subCodec: C) =>
   t.union([subCodec, t.undefined]);
 
-export const optionalized = <P extends t.Props>(props: P): OptionalizedC<P> => {
+export const optionalized = <P extends t.Props>(
+  props: P,
+  name?: string,
+): OptionalizedC<P> => {
   const requiredProps: t.Props = {};
   const optionalProps: t.Props = {};
   for (const key in props) {
@@ -32,8 +74,13 @@ export const optionalized = <P extends t.Props>(props: P): OptionalizedC<P> => {
     }
   }
   return t.intersection([
-    t.type(requiredProps) as t.TypeC<RequiredProps<P>>,
-    t.partial(optionalProps) as t.PartialC<OptionalProps<P>>,
+    t.type(requiredProps, name ? `required_${name}` : undefined) as t.TypeC<
+      RequiredProps<P>
+    >,
+    partialWithoutUndefined(
+      optionalProps,
+      name ? `optional_${name}` : undefined,
+    ) as t.PartialC<OptionalProps<P>>,
   ]);
 };
 
